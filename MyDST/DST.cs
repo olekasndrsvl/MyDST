@@ -6,6 +6,97 @@ using System.Threading.Tasks;
 
 namespace MyDST
 {
+
+    ///------- Вспомогательный аппарат для Краскаловского алгортима---------
+    /// <summary>
+    /// Класс системы непересекающихся множеств
+    /// </summary>
+    class SystemOfDisjointSets
+    {
+        public List<Set> Sets = new List<Set>();
+
+        public void AddEdgeInSet(Arc edge)
+        {
+            Set setA = Find(edge.StartPeak.Name);
+            Set setB = Find(edge.EndPeak.Name);
+
+            if (setA != null && setB == null)
+            {
+                setA.AddEdge(edge);
+            }
+            else if (setA == null && setB != null)
+            {
+                setB.AddEdge(edge);
+            }
+            else if (setA == null && setB == null)
+            {
+                Set set = new Set(edge);
+                Sets.Add(set);
+            }
+            else if (setA != null && setB != null)
+            {
+                if (setA != setB)
+                {
+                    setA.Union(setB, edge);
+                    Sets.Remove(setB);
+                }
+            }
+        }
+
+        public Set Find(string vertex)
+        {
+            foreach (Set set in Sets)
+            {
+                if (set.Contains(vertex)) return set;
+            }
+            return null;
+        }
+    }
+
+
+    public class Set
+    {
+        public Graph SetGraph;
+        public List<string> Vertices;
+
+        public Set(Arc edge)
+        {
+            SetGraph = new Graph(edge);
+
+            Vertices = new List<string>();
+            Vertices.Add(edge.StartPeak.Name);
+            Vertices.Add(edge.EndPeak.Name);
+        }
+
+
+
+        public void Union(Set set, Arc connectingEdge)
+        {
+            SetGraph.Add(set.SetGraph);
+            Vertices.AddRange(set.Vertices);
+            SetGraph.Add(connectingEdge);
+        }
+
+        public void AddEdge(Arc edge)
+        {
+            SetGraph.Add(edge);
+            Vertices.Add(edge.StartPeak.Name);
+            Vertices.Add(edge.EndPeak.Name);
+        }
+
+        public bool Contains(string vertex)
+        {
+            return Vertices.Contains(vertex);
+        }
+
+    }
+
+    ///------- Конец вспомогательного аппарата для Краскаловского алгортима---------
+
+
+
+
+
     public class Peak // класс вершины графа
     {
         public string Name { get; set; } // 
@@ -31,7 +122,7 @@ namespace MyDST
     /// <summary>
     /// Класс дуги графа
     /// </summary>
-    public class Arc
+    public class Arc : IComparable<Arc>
     {
         public double Weight = 0;
         public Peak StartPeak;
@@ -71,11 +162,11 @@ namespace MyDST
         /// <summary>
         /// Все вершины графа
         /// </summary>
-        public IEnumerable<Peak>? Peaks { get; set; }
+        public List<Peak> Peaks = new List<Peak> ();
         /// <summary>
         /// Все дуги графа
         /// </summary>
-        public IEnumerable<Arc>? Arcs { get; set; }
+        public List<Arc> Arcs = new List<Arc> ();
 
         /// <summary>
         /// Матрица смежности графа
@@ -88,46 +179,111 @@ namespace MyDST
 
 
 
+
+        /// <summary>
+        /// Добавление подграфа к графу
+        /// </summary>
+        /// <param name="graph"></param>
+        public void Add(Graph graph)
+        {
+            foreach (Arc edge in graph.Arcs)
+            {
+                Arcs.Add(edge);
+            }
+        }
+        /// <summary>
+        /// Добавление дуги к графу
+        /// </summary>
+        /// <param name="edge"></param>
+        public void Add(Arc edge)
+        {
+            Arcs.Add(edge);
+        }
+
+
+        /// <summary>
+        /// Возвращает вес графа
+        /// </summary>
+        /// <returns></returns>
+        public double GetWeight()
+        {
+            double weight = 0;
+            foreach (Arc edge in Arcs)
+            {
+               weight += edge.Weight;
+            }
+            return weight;
+        }
+
+
+        ///// <summary>
+        ///// Алгоритм поиска Краскаловского дерева(Остовного дерева графа). Возвращает IEnumerable коллекцию дуг остовного дерева.
+        ///// </summary>
+        ///// <param name="startPeak"></param>
+        ///// <returns></returns>
+        //public static IEnumerable<Arc> DST(Peak startPeak)
+        //{
+
+
+
+
+
+        //    List<Peak> visitedPeaks = new List<Peak> ();
+        //    visitedPeaks.Add (startPeak);
+        //    List<Arc> result = new List<Arc> ();
+
+        //    // Рекурсивный обход графа.
+        //    void dst(Peak peak)
+        //    {
+        //        var tmp = peak.IncidnetialPeaks;
+        //        foreach(var x in tmp)
+        //        {
+        //            Console.WriteLine(x);
+        //            if(!visitedPeaks.Contains(x))
+        //            {
+        //                visitedPeaks.Add(x);
+        //                result.Add(new Arc(peak, x, true));
+        //                dst(x);
+
+                      
+        //            }
+        //        }
+
+
+
+        //    }
+
+        //    dst(startPeak);
+        //    result.Sort();
+        //    return result;
+
+
+
+
+
+
+        //}
+
+
+
+
+
+
         /// <summary>
         /// Алгоритм поиска Краскаловского дерева(Остовного дерева графа). Возвращает IEnumerable коллекцию дуг остовного дерева.
         /// </summary>
         /// <param name="startPeak"></param>
         /// <returns></returns>
-        public static IEnumerable<Arc> DST(Peak startPeak)
+        public Graph FindMinimumSpanningTree()
         {
-            List<Peak> visitedPeaks = new List<Peak> ();
-            visitedPeaks.Add (startPeak);
-            List<Arc> result = new List<Arc> ();
-
-            // Рекурсивный обход графа.
-            void dst(Peak peak)
+            Arcs.Sort();
+            var disjointSets = new SystemOfDisjointSets();
+            foreach (Arc edge in Arcs)
             {
-                var tmp = peak.IncidnetialPeaks;
-                foreach(var x in tmp)
-                {
-                    Console.WriteLine(x);
-                    if(!visitedPeaks.Contains(x))
-                    {
-                        visitedPeaks.Add(x);
-                        result.Add(new Arc(peak, x, true));
-                        dst(x);
-
-                      
-                    }
-                }
-
-
-
+                disjointSets.AddEdgeInSet(edge);
             }
 
-            dst(startPeak);
-            return result;
-
-
-
-
-
-
+            return disjointSets.Sets.First().SetGraph;
         }
 
 
@@ -177,6 +333,12 @@ namespace MyDST
 
 
 
+
+
+        public Graph(Arc val)
+        {
+          Arcs.Add(val);
+        }
 
 
 

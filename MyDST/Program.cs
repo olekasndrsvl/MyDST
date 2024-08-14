@@ -1,6 +1,20 @@
 ﻿namespace MyDST;
 public class Programm
 {
+    // Место для программы.
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
     public static int[,] Data = { { 0, 1,1 }, { 1, 0,1 },{ 1, 1,0 } };
     public static int[,] Dta = { 
         { -2, 0, 0, -5,-19 },
@@ -13,7 +27,7 @@ public class Programm
         var g = new Graph(Data, 0);
 
 
-       foreach(var x in g.Arcs)
+        foreach (var x in g.Arcs)
         {
             Console.WriteLine(x.ToString());
         }
@@ -31,11 +45,20 @@ public class Programm
 
         Console.WriteLine("test dst");
         var t = Graph.DST(g.Peaks.First()).ToList();
-        
+
         foreach (var x in t)
         {
             Console.WriteLine(x);
         }
-        
+
+        Console.WriteLine("Warnong!");
+       
+        foreach(var x in g.FindMinimumSpanningTree().Arcs)
+        {
+            Console.WriteLine(x);
+        }
+    
     }
+
+    */
 }
