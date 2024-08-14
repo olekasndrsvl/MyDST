@@ -15,6 +15,10 @@ namespace MyDST
     {
         public List<Set> Sets = new List<Set>();
 
+        /// <summary>
+        /// Добавление ребра в систему непересекающихся множеств
+        /// </summary>
+        /// <param name="edge"></param>
         public void AddEdgeInSet(Arc edge)
         {
             Set setA = Find(edge.StartPeak.Name);
@@ -43,6 +47,11 @@ namespace MyDST
             }
         }
 
+        /// <summary>
+        /// Метод Find принимает вершину графа и возвращает множество, к которому она принадлежит, или null, если такое множество не найдено.
+        /// </summary>
+        /// <param name="vertex"></param>
+        /// <returns></returns>
         public Set Find(string vertex)
         {
             foreach (Set set in Sets)
@@ -53,7 +62,9 @@ namespace MyDST
         }
     }
 
-
+    /// <summary>
+    /// Класс множества подграфов
+    /// </summary>
     public class Set
     {
         public Graph SetGraph;
