@@ -107,8 +107,10 @@ namespace MyDST
 
 
 
-
-    public class Peak // класс вершины графа
+    ///<summary>
+    /// Класс веришны графы
+    ///</summary>
+    public class Peak 
     {
         public string Name { get; set; } // 
         /// <summary>
@@ -130,6 +132,13 @@ namespace MyDST
             return $"| {Name} Peaks:{string.Join(" ", IncidnetialPeaks.Select(x=>x.Name))} |";
         }
     }
+
+
+
+
+
+
+
     /// <summary>
     /// Класс дуги графа
     /// </summary>
@@ -165,6 +174,11 @@ namespace MyDST
 
 
     }
+
+
+
+
+
     /// <summary>
     /// Класс графа
     /// </summary>
@@ -299,7 +313,10 @@ namespace MyDST
 
 
 
-
+        /// <summary>
+        /// Алгоритм Дейкстры(поиска длины кратчайшего пути на графе)
+        /// </summary>
+        /// <param name="start"></param>
         public void Dijkstra(Peak start)
         {
             start.count = 0;
@@ -345,7 +362,10 @@ namespace MyDST
 
 
 
-
+        /// <summary>
+        /// Конструктор графа по одной дуге.
+        /// </summary>
+        /// <param name="val"></param>
         public Graph(Arc val)
         {
           Arcs.Add(val);
@@ -362,14 +382,19 @@ namespace MyDST
         {
             var peaks = new List<Peak>();
             var arcs = new List<Arc>();
+
+
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
                 peaks.Add(new Peak($"{i}"));
             }
 
-            switch (typeofmatrix)
+
+
+
+            switch (typeofmatrix) // Выбор типа матрицы
             {
-                case 0:
+                case 0: 
                     if(matrix.GetLength(0) != matrix.GetLength(1))
                     {
                         throw new ArgumentException("It is not adjency matrix!");
