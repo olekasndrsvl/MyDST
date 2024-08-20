@@ -6,7 +6,110 @@ using System.Threading.Tasks;
 
 namespace MyDST
 {
+    //-------------Вспомогательный аппарат для алгоритма Дейкстры---------------
 
+
+
+    public class Route : IComparable<Route>
+    {
+
+
+        /// <summary>
+        /// Конструктор маршрута по списку дуг
+        /// </summary>
+        /// <param name="arcs"></param>
+        public Route(List<Arc> arcs) {
+        
+            foreach (Arc arc in arcs)
+            {
+
+                AddArcToRoute(arc);
+            }
+        
+        
+        }
+
+
+        public override string ToString()
+        {
+            if(Arcs.Count() != 0)
+            {
+                string s = Arcs.First().StartPeak.Name;
+                var sb = new StringBuilder(s);
+                foreach (Arc arc in Arcs)
+                {
+                    sb.Append($" --({arc.Weight})--> {arc.EndPeak.Name}");
+
+                }
+                return sb.ToString();
+            }
+            else
+            {
+                return "";
+            }
+           
+        }
+
+        List<Arc> route = new List<Arc>();
+        /// <summary>
+        /// Дуги маршрута
+        /// </summary>
+        public List<Arc> Arcs
+        {
+            get
+            {
+                return route;
+            }
+           
+        }
+       
+        /// <summary>
+        /// Метод добавления дуги в маршрут
+        /// </summary>
+        /// <param name="arc"></param>
+        public void AddArcToRoute(Arc arc)
+        {
+            if (arc != null)
+            {
+                route.Add(arc);
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+            
+        }
+        /// <summary>
+        /// Метод возвращает вес маршрута
+        /// </summary>
+        /// <returns></returns>
+        public double GetWeight()
+        {
+            double result = 0;
+            foreach (Arc arc in route)
+            {
+                result += arc.Weight;
+            }
+            return result;
+        }
+
+
+
+
+        public int CompareTo(Route other)
+        {
+            if (other == null) return 1;
+            return this.GetWeight().CompareTo(other.GetWeight());
+
+
+        }
+
+    }
+
+
+
+
+    
     ///------- Вспомогательный аппарат для Краскаловского алгортима---------
     /// <summary>
     /// Класс системы непересекающихся множеств
@@ -117,6 +220,7 @@ namespace MyDST
         /// При применении алгоритма Дейкстры в данное поле будет записана длина кратчайшего пути из стартовой вершины в данную.
         /// </summary>
         public double count = -1; // для Дейкстры
+        public SortedSet<Route> routestoPeak = new SortedSet<Route>(); // для Дейкстры
         public List<Peak> IncidnetialPeaks;
         public Peak()
         {
@@ -320,7 +424,7 @@ namespace MyDST
         public void Dijkstra(Peak start)
         {
             start.count = 0;
-
+            start.routestoPeak.Add(new Route(new List<Arc>()));
             void d_algorithm(Peak peak)
             {
                 foreach(var x in Arcs)
@@ -329,11 +433,25 @@ namespace MyDST
                     {
                         if (x.EndPeak.count != -1)
                         {
+                            foreach(var t in x.StartPeak.routestoPeak)
+                            {
+                                var tmp = new Route(t.Arcs);
+                                tmp.AddArcToRoute(x);
+                                x.EndPeak.routestoPeak.Add(tmp);
+                            }
+
                             x.EndPeak.count= Math.Min(x.EndPeak.count, x.StartPeak.count+x.Weight);
                         }
                         else
                         {
                             x.EndPeak.count = x.StartPeak.count+ x.Weight;
+                            foreach (var t in x.StartPeak.routestoPeak)
+                            {
+                                var tmp = new Route(t.Arcs);
+                                tmp.AddArcToRoute(x);
+                                x.EndPeak.routestoPeak.Add(tmp);
+                            }
+
                         }
                     }
                 }

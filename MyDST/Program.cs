@@ -14,7 +14,7 @@ public class Programm
 
 
 
-    /*
+    
     public static int[,] Data = { { 0, 1,1 }, { 1, 0,1 },{ 1, 1,0 } };
     public static int[,] Dta = { 
         { -2, 0, 0, -5,-19 },
@@ -24,41 +24,29 @@ public class Programm
     };
     static void Main(string[] args)
     {
-        var g = new Graph(Data, 0);
-
-
-        foreach (var x in g.Arcs)
-        {
-            Console.WriteLine(x.ToString());
-        }
-        g = new Graph(Dta, 1);
+        var g = new Graph(Dta, 1);
         g.Dijkstra(g.Peaks.First());
-        Console.WriteLine("Warning!");
-        foreach (var x in g.Arcs)
-        {
-            Console.WriteLine(x.ToString());
-        }
+
         foreach (var x in g.Peaks)
         {
-            Console.WriteLine(x.count);
+            Console.WriteLine(x.Name);
+            var tmp = x.routestoPeak;
+            
+            foreach (var y in tmp)
+            {
+                Console.WriteLine(y.ToString());
+
+
+            }
         }
 
-        Console.WriteLine("test dst");
-        var t = Graph.DST(g.Peaks.First()).ToList();
+        Console.WriteLine();
+        
+        Console.WriteLine(g.Peaks.Last().count);
+        Console.WriteLine(g.Peaks.Last().routestoPeak.First());
 
-        foreach (var x in t)
-        {
-            Console.WriteLine(x);
-        }
 
-        Console.WriteLine("Warnong!");
-       
-        foreach(var x in g.FindMinimumSpanningTree().Arcs)
-        {
-            Console.WriteLine(x);
-        }
-    
     }
 
-    */
+    
 }
